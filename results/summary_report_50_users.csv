@@ -1,0 +1,8 @@
+Label,# Samples,Average,Min,Max,Std. Dev.,Error %,Throughput,Received KB/sec,Sent KB/sec,Avg. Bytes
+Login Transaction,50,434,312,1013,134.39,0.000%,1.01249,0.89,0.24,896.8
+Browse Products Transaction ,50,286,193,386,44.88,0.000%,1.02807,11.43,0.16,11385.1
+View Product Transaction ,50,271,189,321,36.55,0.000%,1.02902,1.27,0.16,1260.8
+Add Cart Transaction ,50,293,192,388,46.17,0.000%,1.02794,0.83,0.31,826.5
+View Cart Transaction ,50,379,295,460,36.37,0.000%,1.02581,0.74,0.16,742.1
+Debug Sampler,50,0,0,1,0.43,0.000%,1.03408,0.40,0.00,400.0
+TOTAL,300,277,0,1013,151.14,0.000%,5.91891,14.94,0.98,2585.2
