@@ -4,13 +4,25 @@
 
 This project demonstrates performance testing of a real-world e-commerce API (FakeStore API) using Apache JMeter. The goal was to simulate realistic user behavior and evaluate system performance under increasing load conditions.
 
-The performance test simulates a complete shopping flow:
+The goal was to identify:
 
-* User Login
-* Browse Products
-* View Product Details
-* Add Product to Cart
-* View Cart
+• System stability  
+• Maximum throughput capacity  
+• Response time behavior under load  
+• Performance bottlenecks  
+• Safe production load limits  
+
+---
+
+## User Flow Simulated
+
+Each virtual user performs the following actions:
+
+1. Login  
+2. Browse Products  
+3. View Product Details  
+4. Add Product to Cart  
+5. View Cart  
 
 This project follows industry-standard performance testing practices including parameterization, correlation, transaction controllers, and load scaling.
 
@@ -18,10 +30,14 @@ This project follows industry-standard performance testing practices including p
 
 ## Tools Used
 
-* Apache JMeter 5.6.3
-* FakeStore API (https://fakestoreapi.com)
-* Java 17
-* GitHub for version control
+• Apache JMeter 5.6.3  
+• FakeStoreAPI (https://fakestoreapi.com)  
+• CSV Data Config (parameterization)  
+• JSON Extractor (correlation)  
+• Debug Sampler  
+• Aggregate Report  
+• Summary Report  
+• Google Sheets (performance analysis & graphs)
 
 ---
 
@@ -94,6 +110,10 @@ screenshots/
     summary_report_10_users.png
     thread_group_100_users.png
     cart_id_extraction.png
+
+Reports/
+    performance_analysis.md
+
 ```
 
 ---
@@ -123,14 +143,22 @@ Screenshots are provided as visual proof of test execution.
 
 ## Key Skills Demonstrated
 
+* Apache JMeter  
 * Performance Test Design
+* API Testing
+* Test Plan Desing
 * Load Testing using Apache JMeter
 * Parameterization using CSV Data Set Config
 * Correlation using JSON Extractor
 * Transaction Controllers usage
-* Performance Metrics Analysis
+* Performance Metrics Analysis (P95, P99)
+* Percentile Analysis (P95, P99)
+* Throughput Analysis  
+* Bottleneck Identification
+* Capacity Planning   
 * Test Result Documentation
 * GitHub Project Documentation
+
 
 ---
 
