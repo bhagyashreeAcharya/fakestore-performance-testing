@@ -1,80 +1,287 @@
-# Performance Test Analysis – FakeStore API
-
-## Test Objective
-
-Evaluate system performance under increasing user load and identify response time trends, throughput behavior, and system stability.
+# FakeStore API Performance Analysis Report
 
 ---
 
-## Load Levels Tested
+# 1. Executive Summary
 
-| Load Level  | Users | Ramp-up |
-| ----------- | ----- | ------- |
-| Baseline    | 1     | 1 sec   |
-| Light Load  | 10    | 10 sec  |
-| Medium Load | 50    | 50 sec  |
-| Heavy Load  | 100   | 100 sec |
-| Stress Load | 200   | 200 sec |
+Performance testing was conducted on FakeStore API using Apache JMeter to evaluate system performance, scalability, and stability under increasing concurrent user load.
+
+A realistic e-commerce user flow was simulated:
+
+Login → Browse Products → View Product → Add Cart → View Cart
+
+The system demonstrated stable performance, zero failures, and reached maximum throughput capacity at approximately 100 concurrent users.
+
+Beyond this point, throughput plateaued and high-percentile response times increased, indicating system saturation.
 
 ---
 
-## Response Time Analysis
+# 2. Test Objective
+
+Primary objectives:
+
+• Measure system response time under load  
+• Identify maximum throughput capacity  
+• Analyze percentile response time (P95, P99)  
+• Detect performance bottlenecks  
+• Determine safe operating capacity  
+
+---
+
+# 3. Test Environment
+
+| Component | Value |
+|---------|------|
+| Tool | Apache JMeter 5.6.3 |
+| Protocol | HTTPS |
+| API Tested | fakestoreapi.com |
+| Test Machine | Windows |
+| Test Type | Load Testing |
+| Correlation | JSON Extractor |
+| Parameterization | CSV Data Set Config |
+
+---
+
+# 4. User Flow Simulated
+
+Each virtual user performed the following actions:
+
+1. Login  
+2. Browse Products  
+3. View Product Details  
+4. Add Product to Cart  
+5. View Cart  
+
+Correlation implemented:
+
+POST /carts → Extract cartId  
+GET /carts/${cartId} → View Cart  
+
+This ensures realistic session simulation.
+
+---
+
+# 5. Load Profile Executed
+
+| Load Level | Concurrent Users | Ramp-up Time |
+|-----------|-----------------|-------------|
+| Baseline | 1 | 1 sec |
+| Light Load | 10 | 10 sec |
+| Medium Load | 50 | 50 sec |
+| Heavy Load | 100 | 100 sec |
+| Stress Load | 200 | 200 sec |
+
+---
+
+# 6. Performance Metrics Summary
+
+| Users | Avg Response (ms) | P95 (ms) | P99 (ms) | Throughput (req/sec) | Error Rate |
+|------|------------------|----------|----------|----------------------|-----------|
+| 1 | 366 | 978 | 978 | 2.72 | 0% |
+| 10 | 274 | 436 | 702 | 5.59 | 0% |
+| 50 | 277 | 420 | 625 | 5.92 | 0% |
+| 100 | 252 | 407 | 529 | 5.98 | 0% |
+| 200 | 293 | 496 | 909 | 5.99 | 0% |
+
+---
+
+# 7. Response Time Analysis
+
+Graph: screenshots/response_time_vs_users.png
 
 Observation:
 
-* Response time increased gradually as user load increased.
-* No sudden spikes or abnormal delays observed.
-* System handled concurrent users efficiently under tested load levels.
+• Average response time remained stable between 250–300 ms  
+• Performance improved initially due to efficient resource utilization  
+• Slight increase at 200 users indicates system approaching capacity  
 
-Expected behavior confirmed:
-Higher load results in increased response time due to server resource utilization.
+Conclusion:
+
+System maintains stable average performance under load.
 
 ---
 
-## Throughput Analysis
+# 8. P95 Response Time Analysis
+
+Graph: screenshots/p95_response_time_vs_users.png
+
+P95 represents worst response time experienced by 95% of users.
 
 Observation:
 
-* Throughput increased proportionally with user load.
-* Indicates system is capable of handling concurrent requests efficiently.
+• P95 improved significantly after baseline  
+• Stabilized between 400–500 ms  
+• Slight increase at 200 users  
 
-This shows proper scalability behavior.
+Conclusion:
+
+System handles most user requests efficiently.
 
 ---
 
-## Error Rate Analysis
+# 9. P99 Response Time Analysis (Critical Metric)
+
+Graph: screenshots/p99_response_time_vs_users.png
+
+P99 represents worst response time experienced by 99% of users.
+
+This is the most important real-world performance indicator.
 
 Observation:
 
-* Error rate remained at 0% during all load levels.
-* Indicates system stability under simulated load conditions.
+• P99 response time increased significantly at 200 users
+• Reached 909 ms at stress load
+
+Interpretation:
+
+System is reaching performance limits.
+
+Some requests are delayed due to resource contention.
+
+This is early evidence of system saturation.
 
 ---
 
-## Correlation Verification
+# 10. Throughput Analysis
 
-Dynamic cartId extraction using JSON Extractor worked successfully.
+Graph: screenshots/throughput_vs_users.png
 
-Verified using Debug Sampler.
+Observation:
 
-This confirms realistic user session simulation.
+• Throughput increased rapidly from 1 to 50 users  
+• Throughput plateaued at approximately 6 requests/sec  
+• No throughput increase beyond 100 users  
 
----
+Conclusion:
 
-## Performance Conclusion
+System reached maximum processing capacity at 100 users.
 
-System performed reliably under load up to 200 concurrent users.
+Adding more users did not increase system output.
 
-No critical performance bottlenecks observed.
-
-Response time increase was gradual and within acceptable limits.
-
-System demonstrated stable and scalable behavior under tested load conditions.
+This confirms backend saturation point.
 
 ---
 
-## Overall Result
+# 11. Error Rate Analysis
 
-Performance Test Status: PASS
+Error Rate: 0%
 
-System is capable of handling expected user load efficiently.
+Observation:
+
+• No request failures observed  
+• System remained stable even at stress load  
+
+Conclusion:
+
+System demonstrates strong reliability and stability.
+
+---
+
+# 12. Bottleneck Identification
+
+Bottleneck indicators observed at 200 users:
+
+• Throughput stopped increasing  
+• P99 response time increased sharply  
+• Response time degradation began  
+
+Conclusion:
+
+Backend reached maximum processing capacity.
+
+Requests began queueing under heavy load.
+
+---
+
+# 13. System Capacity Conclusion
+
+Maximum throughput capacity:
+
+≈ 6 requests/sec
+
+Safe operating load:
+
+Up to 100 concurrent users
+
+Beyond this point:
+
+• No throughput improvement  
+• Increased response latency  
+• Reduced performance efficiency  
+
+---
+
+# 14. Scalability Analysis
+
+System demonstrated:
+
+• Good horizontal scalability up to 100 users  
+• Stable response times  
+• No system failures  
+
+Scalability limitation begins beyond 100 concurrent users.
+
+---
+
+# 15. Stability Analysis
+
+System remained fully stable during testing.
+
+No crashes  
+No errors  
+No failed transactions  
+
+This confirms system robustness.
+
+---
+
+# 16. Correlation Implementation
+
+Dynamic cartId extraction implemented using JSON Extractor.
+
+Example:
+
+Extract:
+
+$.id → cartId
+
+Used in:
+
+GET /carts/${cartId}
+
+This ensures accurate session simulation.
+
+---
+
+# 17. Final Conclusion
+
+FakeStore API demonstrates strong performance characteristics under load.
+
+Key findings:
+
+• Stable performance up to 100 concurrent users  
+• Maximum throughput capacity ≈ 6 requests/sec  
+• No errors observed  
+• Backend saturation begins beyond 100 users  
+• P99 latency increase indicates performance limits  
+
+System is suitable for moderate concurrent load scenarios.
+
+---
+
+# 18. Recommendations
+
+Recommended production load:
+
+≤ 100 concurrent users
+
+Recommended improvements for higher scalability:
+
+• Load balancing  
+• Horizontal scaling  
+• Infrastructure optimization  
+• Performance monitoring  
+
+---
+
+# End of Report
