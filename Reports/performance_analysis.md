@@ -4,64 +4,82 @@
 
 # 1. Executive Summary
 
-Performance testing was conducted on FakeStore API using Apache JMeter to evaluate system performance, scalability, and stability under increasing concurrent user load.
+Performance testing was conducted on the FakeStore API using Apache JMeter to evaluate system performance, scalability, stability, and capacity under increasing concurrent user load.
 
-A realistic e-commerce user flow was simulated:
+A realistic end-to-end e-commerce user journey was simulated:
 
 Login → Browse Products → View Product → Add Cart → View Cart
 
-The system demonstrated stable performance, zero failures, and reached maximum throughput capacity at approximately 100 concurrent users.
+The system demonstrated strong stability, consistent response times, and zero request failures across all load levels.
 
-Beyond this point, throughput plateaued and high-percentile response times increased, indicating system saturation.
+Key performance findings:
+
+• Average response time remained stable between 252 ms and 293 ms  
+• Throughput increased proportionally with load until saturation  
+• Maximum throughput capacity reached approximately 6 requests per second  
+• System scaled efficiently up to 100 concurrent users  
+• Beyond 100 users, throughput plateaued and response time variability increased  
+
+P99 response time reached 909 ms at 200 concurrent users, indicating backend resource saturation and request queuing.
+
+Overall, the system demonstrates reliable performance and predictable scalability within defined capacity limits.
 
 ---
 
 # 2. Test Objective
 
-Primary objectives:
+Primary objectives of this performance test:
 
-• Measure system response time under load  
-• Identify maximum throughput capacity  
-• Analyze percentile response time (P95, P99)  
-• Detect performance bottlenecks  
-• Determine safe operating capacity  
+• Evaluate system responsiveness under increasing load  
+• Determine maximum throughput capacity  
+• Analyze high-percentile response times (P95 and P99)  
+• Identify performance bottlenecks and saturation points  
+• Establish safe concurrent user capacity  
+• Validate system stability and reliability under stress  
+
+These objectives help determine production readiness and scalability limits.
 
 ---
 
 # 3. Test Environment
 
-| Component | Value |
-|---------|------|
+| Component | Details |
+|---------|---------|
 | Tool | Apache JMeter 5.6.3 |
 | Protocol | HTTPS |
-| API Tested | fakestoreapi.com |
+| API Tested | https://fakestoreapi.com |
 | Test Machine | Windows |
 | Test Type | Load Testing |
-| Correlation | JSON Extractor |
+| Correlation Method | JSON Extractor |
 | Parameterization | CSV Data Set Config |
+| Test Data | users.csv, products.csv |
+
+All requests were executed under controlled and repeatable conditions.
 
 ---
 
 # 4. User Flow Simulated
 
-Each virtual user performed the following actions:
+Each virtual user executed a complete transactional workflow representing real user behavior:
 
-1. Login  
-2. Browse Products  
-3. View Product Details  
-4. Add Product to Cart  
-5. View Cart  
+1. Login using valid credentials  
+2. Browse available products  
+3. View individual product details  
+4. Add product to cart  
+5. View cart using dynamically extracted cartId  
 
-Correlation implemented:
+Correlation implementation ensured accurate session simulation:
 
 POST /carts → Extract cartId  
-GET /carts/${cartId} → View Cart  
+GET /carts/${cartId} → View Cart
 
-This ensures realistic session simulation.
+This prevents hard-coded values and ensures realistic dynamic execution.
 
 ---
 
 # 5. Load Profile Executed
+
+The system was tested under progressively increasing concurrent user load:
 
 | Load Level | Concurrent Users | Ramp-up Time |
 |-----------|-----------------|-------------|
@@ -70,6 +88,8 @@ This ensures realistic session simulation.
 | Medium Load | 50 | 50 sec |
 | Heavy Load | 100 | 100 sec |
 | Stress Load | 200 | 200 sec |
+
+Gradual ramp-up ensures realistic load distribution and prevents artificial spikes.
 
 ---
 
@@ -83,9 +103,11 @@ This ensures realistic session simulation.
 | 100 | 252 | 407 | 529 | 5.98 | 0% |
 | 200 | 293 | 496 | 909 | 5.99 | 0% |
 
+These metrics provide insight into system responsiveness, stability, and capacity.
+
 ---
 
-# 7. Response Time Analysis
+# 7. Average Response Time Analysis
 
 ## Response Time vs Concurrent Users
 
@@ -93,13 +115,17 @@ This ensures realistic session simulation.
 
 Observation:
 
-• Average response time remained stable between 250–300 ms  
-• Performance improved initially due to efficient resource utilization  
-• Slight increase at 200 users indicates system approaching capacity  
+• Average response time remained stable across all load levels  
+• Response time improved initially as system resources were efficiently utilized  
+• Slight increase at 200 users indicates resource contention and queuing  
+
+Interpretation:
+
+Stable average response time indicates efficient load handling and balanced resource utilization.
 
 Conclusion:
 
-System maintains stable average performance under load.
+System maintains consistent response performance even under stress load.
 
 ---
 
@@ -109,44 +135,46 @@ System maintains stable average performance under load.
 
 ![P95 Response Time vs Users](../screenshots/p95_response_time_vs_users.png)
 
-
-P95 represents worst response time experienced by 95% of users.
+P95 represents the response time experienced by 95% of users.
 
 Observation:
 
-• P95 improved significantly after baseline  
-• Stabilized between 400–500 ms  
-• Slight increase at 200 users  
+• P95 response time improved significantly after baseline load  
+• Stabilized between 400 ms and 500 ms  
+• Slight increase at stress load  
+
+Interpretation:
+
+Majority of users experience fast and consistent performance.
 
 Conclusion:
 
-System handles most user requests efficiently.
+System delivers reliable performance for almost all users under load.
 
 ---
 
-# 9. P99 Response Time Analysis (Critical Metric)
+# 9. P99 Response Time Analysis (Critical Performance Indicator)
 
 ## P99 Response Time vs Concurrent Users
 
 ![P99 Response Time vs Users](../screenshots/p99_response_time_vs_users.png)
 
+P99 represents worst-case response time experienced by 99% of users.
 
-P99 represents worst response time experienced by 99% of users.
-
-This is the most important real-world performance indicator.
+This is the most important metric for identifying performance bottlenecks.
 
 Observation:
 
-• P99 response time increased significantly at 200 users
-• Reached 909 ms at stress load
+• P99 remained stable up to 100 concurrent users  
+• Increased significantly to 909 ms at 200 users  
 
 Interpretation:
 
-System is reaching performance limits.
+High percentile latency increase indicates backend saturation and request queuing.
 
-Some requests are delayed due to resource contention.
+Conclusion:
 
-This is early evidence of system saturation.
+System reaches performance limits beyond 100 concurrent users.
 
 ---
 
@@ -156,142 +184,180 @@ This is early evidence of system saturation.
 
 ![Throughput vs Users](../screenshots/throughput_vs_users.png)
 
+Throughput represents system processing capacity.
 
 Observation:
 
-• Throughput increased rapidly from 1 to 50 users  
-• Throughput plateaued at approximately 6 requests/sec  
-• No throughput increase beyond 100 users  
+• Throughput increased proportionally with load  
+• Throughput plateaued at approximately 6 requests per second  
+• No throughput improvement beyond 100 concurrent users  
+
+Interpretation:
+
+Backend reached maximum processing capacity.
 
 Conclusion:
 
-System reached maximum processing capacity at 100 users.
-
-Adding more users did not increase system output.
-
-This confirms backend saturation point.
+System saturation point identified at approximately 100 concurrent users.
 
 ---
 
 # 11. Error Rate Analysis
 
-Error Rate: 0%
+Error Rate Observed: 0%
 
 Observation:
 
-• No request failures observed  
-• System remained stable even at stress load  
+• No request failures occurred  
+• System remained fully stable during stress load  
 
 Conclusion:
 
-System demonstrates strong reliability and stability.
+System demonstrates excellent reliability and operational stability.
 
 ---
 
 # 12. Bottleneck Identification
 
-Bottleneck indicators observed at 200 users:
+Performance bottleneck indicators observed at 200 users:
 
-• Throughput stopped increasing  
-• P99 response time increased sharply  
-• Response time degradation began  
+• Throughput plateaued  
+• P99 latency increased significantly  
+• Response time variability increased  
+
+Interpretation:
+
+Backend resources reached maximum utilization.
+
+Requests began queuing due to limited processing capacity.
 
 Conclusion:
 
-Backend reached maximum processing capacity.
-
-Requests began queueing under heavy load.
+System bottleneck occurs beyond 100 concurrent users.
 
 ---
 
-# 13. System Capacity Conclusion
+# 13. System Capacity Analysis
 
-Maximum throughput capacity:
+Maximum throughput capacity identified:
 
-≈ 6 requests/sec
+≈ 6 requests per second
 
-Safe operating load:
+Optimal performance range:
 
-Up to 100 concurrent users
+10 to 100 concurrent users
 
-Beyond this point:
+Beyond this range:
 
 • No throughput improvement  
-• Increased response latency  
+• Increased response time variability  
 • Reduced performance efficiency  
+
+Conclusion:
+
+100 concurrent users represents optimal operating capacity.
 
 ---
 
 # 14. Scalability Analysis
 
-System demonstrated:
+System demonstrated effective horizontal scalability up to 100 concurrent users.
 
-• Good horizontal scalability up to 100 users  
-• Stable response times  
-• No system failures  
+Scalability evidence:
 
-Scalability limitation begins beyond 100 concurrent users.
+• Linear throughput increase with load  
+• Stable average response times  
+• Zero error rate  
+
+Scalability limitation indicators beyond 100 users:
+
+• Throughput plateau  
+• Increased P99 latency  
+• Resource saturation symptoms  
+
+Conclusion:
+
+System scales efficiently within defined capacity limits.
 
 ---
 
 # 15. Stability Analysis
 
-System remained fully stable during testing.
+System remained fully stable during all test scenarios.
 
-No crashes  
-No errors  
-No failed transactions  
+Evidence:
 
-This confirms system robustness.
+• Zero request failures  
+• No crashes observed  
+• Consistent response behavior  
+
+Conclusion:
+
+System demonstrates high reliability under load.
 
 ---
 
-# 16. Correlation Implementation
+# 16. Correlation Validation
 
 Dynamic cartId extraction implemented using JSON Extractor.
 
-Example:
-
-Extract:
+Extraction:
 
 $.id → cartId
 
-Used in:
+Usage:
 
 GET /carts/${cartId}
 
-This ensures accurate session simulation.
+This ensures accurate session simulation and prevents data reuse.
 
 ---
 
-# 17. Final Conclusion
+# 17. Final Performance Verdict
 
-FakeStore API demonstrates strong performance characteristics under load.
+Performance testing confirms that FakeStore API demonstrates strong stability, predictable performance, and efficient scalability under increasing concurrent user load.
 
 Key findings:
 
 • Stable performance up to 100 concurrent users  
 • Maximum throughput capacity ≈ 6 requests/sec  
-• No errors observed  
+• Zero error rate across all load levels  
 • Backend saturation begins beyond 100 users  
-• P99 latency increase indicates performance limits  
+• P99 latency increase confirms capacity limits  
 
-System is suitable for moderate concurrent load scenarios.
+Production Readiness Assessment:
+
+System is production-ready for moderate concurrent user load.
+
+Safe concurrent user capacity:
+
+≤ 100 concurrent users
+
+Beyond this threshold, backend scaling is recommended.
 
 ---
 
 # 18. Recommendations
 
-Recommended production load:
+To improve scalability and increase capacity:
 
-≤ 100 concurrent users
+Infrastructure Recommendations:
 
-Recommended improvements for higher scalability:
+• Implement load balancing  
+• Add horizontal scaling  
+• Increase backend compute resources  
 
-• Load balancing  
-• Horizontal scaling  
-• Infrastructure optimization  
-• Performance monitoring  
+Application Optimization Recommendations:
+
+• Optimize backend processing logic  
+• Implement caching mechanisms  
+• Optimize database queries  
+
+Monitoring Recommendations:
+
+• Monitor P95 and P99 latency in production  
+• Track throughput trends  
+• Monitor system resource utilization  
 
 ---
 
