@@ -107,7 +107,7 @@ System maintains stable average performance under load.
 
 ## P95 Response Time vs Concurrent Users
 
-![P95 Response Time vs Users](../screenshots/P95 Response Time vs Concurrent Users.png)
+![P95 Response Time vs Users](../screenshots/p95_response_time_vs_users.png)
 
 
 P95 represents worst response time experienced by 95% of users.
@@ -128,7 +128,7 @@ System handles most user requests efficiently.
 
 ## P99 Response Time vs Concurrent Users
 
-![P99 Response Time vs Users](../screenshots/P99 Response Time vs Concurrent Users.png)
+![P99 Response Time vs Users](../screenshots/p99_response_time_vs_users.png)
 
 
 P99 represents worst response time experienced by 99% of users.
@@ -154,7 +154,7 @@ This is early evidence of system saturation.
 
 ## Throughput vs Concurrent Users
 
-![Throughput vs Users](../screenshots/Throughput vs Concurrent Users.png)
+![Throughput vs Users](../screenshots/throughput_vs_users.png)
 
 
 Observation:
